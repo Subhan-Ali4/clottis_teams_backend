@@ -75,6 +75,6 @@ jobs:
         run: |
           set -eu
           scp -o StrictHostKeyChecking=yes backend.tar "$SSH_USER@$SSH_HOST:/tmp/clottis-teams-backend-$SHA.tar"
-          ssh -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" "docker load -i /tmp/clottis-teams-backend-$SHA.tar && rm /tmp/clottis-teams-backend-$SHA.tar && docker rm -f clottis-teams-backend 2>/dev/null || true; docker run -d --name clottis-teams-backend --restart unless-stopped --env-file /opt/clottis-teams/backend.env -p 127.0.0.1:8082:8080 clottis-teams-backend:$SHA"
+          ssh -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" "set -eu; test -x /opt/clottis-teams/deploy-backend.sh; docker load -i /tmp/clottis-teams-backend-$SHA.tar; rm /tmp/clottis-teams-backend-$SHA.tar; /opt/clottis-teams/deploy-backend.sh 'clottis-teams-backend:$SHA'"
       - name: Verify public backend
         run: curl --fail --show-error --retry 5 --retry-delay 5 https://team.clottis.net/api/v1/health
